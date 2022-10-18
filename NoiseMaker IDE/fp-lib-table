@@ -6,4 +6,5 @@
   (lib (name Arduino_Nano)(type KiCad)(uri $KIPRJMOD/../common/modules/Arduino_Nano.pretty)(options "")(descr ""))
   (lib (name noisemaker)(type KiCad)(uri $KIPRJMOD/../common/modules/noisemaker.pretty)(options "")(descr ""))
   (lib (name solder_bridge)(type KiCad)(uri $KIPRJMOD/../common/modules/solder_bridge.pretty)(options "")(descr ""))
+  (lib (name switch_cutout)(type KiCad)(uri $KIPRJMOD/../common/modules/switch_cutout.pretty)(options "")(descr ""))
 )
