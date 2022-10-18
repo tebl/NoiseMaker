@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name mounting)(type Legacy)(uri $KIPRJMOD/../common/library/mounting.lib)(options "")(descr ""))
+  (lib (name DFPlayer_Mini)(type Legacy)(uri $KIPRJMOD/../common/library/DFPlayer_Mini.lib)(options "")(descr ""))
+  (lib (name Arduino_Nano)(type Legacy)(uri $KIPRJMOD/../common/library/arduino_nano.lib)(options "")(descr ""))
+  (lib (name ide_40)(type Legacy)(uri D:/ownCloud/Documents/Projects/NoiseMaker/common/library/ide_40.lib)(options "")(descr ""))
+)

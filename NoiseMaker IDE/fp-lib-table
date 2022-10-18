@@ -1,0 +1,9 @@
+(fp_lib_table
+  (lib (name speaker)(type KiCad)(uri $KIPRJMOD/../common/modules/speaker.pretty)(options "")(descr ""))
+  (lib (name mounting)(type KiCad)(uri $KIPRJMOD/../common/modules/mounting.pretty)(options "")(descr ""))
+  (lib (name resistor)(type KiCad)(uri $KIPRJMOD/../common/modules/resistor.pretty)(options "")(descr ""))
+  (lib (name DFPlayer_Mini)(type KiCad)(uri $KIPRJMOD/../common/modules/DFPlayer_Mini.pretty)(options "")(descr ""))
+  (lib (name Arduino_Nano)(type KiCad)(uri $KIPRJMOD/../common/modules/Arduino_Nano.pretty)(options "")(descr ""))
+  (lib (name noisemaker)(type KiCad)(uri $KIPRJMOD/../common/modules/noisemaker.pretty)(options "")(descr ""))
+  (lib (name solder_bridge)(type KiCad)(uri $KIPRJMOD/../common/modules/solder_bridge.pretty)(options "")(descr ""))
+)
