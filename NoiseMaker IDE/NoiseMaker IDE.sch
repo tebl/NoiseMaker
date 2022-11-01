@@ -4,14 +4,14 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "NoiseMaker IDE"
+Title "NoiseMaker"
 Date ""
 Rev "A"
 Comp ""
 Comment1 ""
 Comment2 ""
-Comment3 ""
-Comment4 "Use with IDE-based storage."
+Comment3 "34-pin floppy alternatives."
+Comment4 "NoiseMaker module for use with 40-pin IDE, alternatively it can be built for use with"
 $EndDescr
 $Comp
 L mounting:Mounting M1
@@ -305,7 +305,7 @@ U 1 1 6351B81B
 P 2025 3375
 F 0 "J1" H 2025 4542 50  0000 C CNN
 F 1 "IDE_OUT" H 2025 4451 50  0000 C CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical" H 2025 3375 50  0001 C CNN
+F 2 "noisemaker:PinSocket_2x20_P2.54mm_Vertical" H 2025 3375 50  0001 C CNN
 F 3 "~" H 2025 3375 50  0001 C CNN
 	1    2025 3375
 	1    0    0    -1  
