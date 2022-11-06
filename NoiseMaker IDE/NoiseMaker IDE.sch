@@ -295,7 +295,7 @@ NoConn ~ 6075 3225
 NoConn ~ 6075 3325
 NoConn ~ 6075 3425
 NoConn ~ 6075 3525
-NoConn ~ 6075 3625
+NoConn ~ 6075 3825
 NoConn ~ 6075 3725
 NoConn ~ 8850 2700
 NoConn ~ 8850 2800
@@ -954,12 +954,12 @@ Text Notes 1925 4550 0    50   ~ 0
 $Comp
 L power:GND #PWR04
 U 1 1 63AF688F
-P 6900 3900
-F 0 "#PWR04" H 6900 3650 50  0001 C CNN
-F 1 "GND" H 6905 3727 50  0000 C CNN
-F 2 "" H 6900 3900 50  0001 C CNN
-F 3 "" H 6900 3900 50  0001 C CNN
-	1    6900 3900
+P 6900 3700
+F 0 "#PWR04" H 6900 3450 50  0001 C CNN
+F 1 "GND" H 6905 3527 50  0000 C CNN
+F 2 "" H 6900 3700 50  0001 C CNN
+F 3 "" H 6900 3700 50  0001 C CNN
+	1    6900 3700
 	1    0    0    -1  
 $EndComp
 Text Label 1225 5100 0    50   ~ 0
@@ -1002,15 +1002,15 @@ Wire Wire Line
 $Comp
 L Jumper:SolderJumper_3_Bridged12 JP4
 U 1 1 63BB5A15
-P 6625 3825
-F 0 "JP4" H 6675 3575 50  0000 L CNN
-F 1 "MODE_SEL3" H 6675 3650 50  0000 L CNN
-F 2 "solder_bridge:select2" H 6625 3825 50  0001 C CNN
-F 3 "~" H 6625 3825 50  0001 C CNN
-	1    6625 3825
+P 6625 3625
+F 0 "JP4" H 6675 3375 50  0000 L CNN
+F 1 "MODE_SEL3" H 6675 3450 50  0000 L CNN
+F 2 "solder_bridge:select2" H 6625 3625 50  0001 C CNN
+F 3 "~" H 6625 3625 50  0001 C CNN
+	1    6625 3625
 	-1   0    0    1   
 $EndComp
-NoConn ~ 6825 3825
+NoConn ~ 6825 3625
 $Comp
 L Jumper:SolderJumper_3_Bridged12 JP5
 U 1 1 63B6D0B3
@@ -1023,23 +1023,21 @@ F 3 "~" H 1950 5000 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	6900 3900 6900 3600
+	6900 3400 6625 3400
 Wire Wire Line
-	6900 3600 6625 3600
-Wire Wire Line
-	6625 3600 6625 3675
+	6625 3400 6625 3475
 Text Notes 5025 5550 0    50   ~ 0
 MODE_SEL[1-3] pins 1-2 should be linked\nwhen built as IDE activity indicator. 2-3\nwhen used in floppy mode.
 Text Notes 4975 5400 0    50   ~ 0
 *
-Text Notes 6575 3600 0    50   ~ 0
+Text Notes 6575 3400 0    50   ~ 0
 *
 Text Notes 1900 4775 0    50   ~ 0
 *
 Text Notes 2975 6800 0    50   ~ 0
 *
 Wire Wire Line
-	6075 3825 6425 3825
+	6075 3625 6425 3625
 Text Notes 1850 5875 0    50   ~ 0
 **
 Text Notes 1850 6425 0    50   ~ 0
@@ -1060,12 +1058,14 @@ F 3 "~" H 6625 3325 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6900 3600 6900 3125
-Wire Wire Line
 	6900 3125 6825 3125
-Connection ~ 6900 3600
 Wire Wire Line
 	6075 3125 6425 3125
+Connection ~ 6900 3400
+Wire Wire Line
+	6900 3400 6900 3125
+Wire Wire Line
+	6900 3400 6900 3700
 Wire Bus Line
 	1100 2075 1100 7125
 Wire Bus Line
