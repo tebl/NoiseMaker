@@ -3,4 +3,4 @@
 #define DEFAULT_ANSI false
 #define DEFAULT_PROFILE 0
 
-#define IDLE_THRESHOLD 200
+#define IDLE_THRESHOLD 100

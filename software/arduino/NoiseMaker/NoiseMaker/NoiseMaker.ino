@@ -83,9 +83,21 @@ void loop_floppy() {
 
 void loop_ide() {
   switch (state) {
+
+    /* Waiting for startup sound to finish */
+    case STATE_INIT:
+      // dfplayer.waitAvailable();
+      while (dfplayer.available()) {
+        if (dfplayer.readType() == DFPlayerPlayFinished) {
+          Serial.println(F("set idle"));
+          state = STATE_IDE_IDLE;
+        } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+      }
+      break;
+
+    /* Waiting for activity */
     case STATE_IDE_IDLE:
-      if (last_activity == 0) return;
-      if ((millis() - last_activity) < IDLE_THRESHOLD) {
+      if (last_activity > 0 && ((millis() - last_activity) < IDLE_THRESHOLD)) {
         Serial.println(F("set_active"));
         state = STATE_IDE_ACTIVE;
         play_ide_active();
@@ -98,6 +110,14 @@ void loop_ide() {
         Serial.println(F("set_paused"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
+      } else {
+        while (dfplayer.available()) {
+          if (dfplayer.readType() == DFPlayerPlayFinished) {
+            Serial.println(F("replay"));
+            play_ide_active();
+            last_activity = millis();
+          } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+        }
       }
       break;
 
@@ -110,33 +130,12 @@ void loop_ide() {
       }
       break;
 
-    case STATE_INIT:
     default:
       break;
   }
 }
 
-void track_finished() {
-  if (mode == MODE_FLOPPY) {
-  } else {
-    switch (state) {
-      case STATE_INIT:
-        state = STATE_IDE_IDLE;
-        Serial.println(F("set idle"));
-        break;
-      
-      case STATE_IDE_ACTIVE:
-        Serial.println(F("replay"));
-        play_ide_active();
-        break;
-
-      default:
-        break;
-    }
-  }
-}
-
-void handle_dfplayer(uint8_t type, int value){
+void unknown_error(uint8_t type, int value){
   switch (type) {
     case TimeOut:
       ansi_error_ln(F("Time Out!"));
@@ -155,7 +154,6 @@ void handle_dfplayer(uint8_t type, int value){
       break;
     case DFPlayerPlayFinished:
       ansi_notice_ln(F("Track finished!"));
-      track_finished();
       break;
     case DFPlayerError:
       ansi_error();
@@ -199,10 +197,6 @@ void loop() {
     last_activity = millis();
   }
   digitalWrite(LED_PIN, !digitalRead(DFPlayer_BUSY));
-
-  if (dfplayer.available()) {
-    handle_dfplayer(dfplayer.readType(), dfplayer.read());
-  }
 
   if (mode == MODE_FLOPPY) loop_floppy();
   else loop_ide();

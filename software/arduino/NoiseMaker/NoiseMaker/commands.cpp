@@ -57,15 +57,15 @@ void update_volume(uint8_t value) {
 }
 
 void volume_max() {
-  update_volume(30);
+  update_volume(31);
 }
 
 void volume_high() {
-  update_volume(25);
+  update_volume(20);
 }
 
 void volume_medium() {
-  update_volume(20);
+  update_volume(15);
 }
 
 void volume_low() {
