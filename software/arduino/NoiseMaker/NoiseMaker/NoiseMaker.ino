@@ -34,8 +34,13 @@ void play_ide_shutdown() {
 void setup_floppy() {
 }
 
+void ide_interrupt() {
+  last_activity = millis();
+}
+
 void setup_ide() {
   play_ide_startup();
+  attachInterrupt(digitalPinToInterrupt(ARD_P2), ide_interrupt, FALLING);
 }
 
 void setup() {
@@ -54,11 +59,11 @@ void setup() {
   ansi_default();
 
   Serial.print(F("Initializing DFPlayer ... "));
-  if (!dfplayer.begin(dfplayer_serial)) {
+  if (!dfplayer.begin(dfplayer_serial, true, false)) {
     ansi_error();
     Serial.println(F("failed!"));
     Serial.println(F("Check SD-card!"));
-    while(true);
+    while(true) delay(0);
   };
   ansi_highlight_ln(F("done!"));
 
@@ -81,12 +86,12 @@ void loop_floppy() {
 
 }
 
+bool replay = false;
 void loop_ide() {
   switch (state) {
 
     /* Waiting for startup sound to finish */
     case STATE_INIT:
-      // dfplayer.waitAvailable();
       while (dfplayer.available()) {
         if (dfplayer.readType() == DFPlayerPlayFinished) {
           Serial.println(F("set idle"));
@@ -97,6 +102,7 @@ void loop_ide() {
 
     /* Waiting for activity */
     case STATE_IDE_IDLE:
+      while (digitalRead(DFPlayer_BUSY) == LOW);
       if (last_activity > 0 && ((millis() - last_activity) < IDLE_THRESHOLD)) {
         Serial.println(F("set_active"));
         state = STATE_IDE_ACTIVE;
@@ -106,6 +112,7 @@ void loop_ide() {
 
     case STATE_IDE_ACTIVE:
       /* Check for activity timeout */
+      replay = false;
       if ((millis() - last_activity) > IDLE_THRESHOLD) {
         Serial.println(F("set_paused"));
         state = STATE_IDE_PAUSED;
@@ -113,10 +120,14 @@ void loop_ide() {
       } else {
         while (dfplayer.available()) {
           if (dfplayer.readType() == DFPlayerPlayFinished) {
+            replay = true;
+          } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+        }
+
+        if (replay) {
             Serial.println(F("replay"));
             play_ide_active();
-            last_activity = millis();
-          } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+            while (digitalRead(DFPlayer_BUSY) == HIGH);
         }
       }
       break;
@@ -124,9 +135,10 @@ void loop_ide() {
     case STATE_IDE_PAUSED:
       /* Check if we now see activity again */
       if ((millis() - last_activity) < IDLE_THRESHOLD) {
-        Serial.println(F("set_active"));
+        Serial.println(F("resume"));
         state = STATE_IDE_ACTIVE;
         dfplayer.start();
+        while (digitalRead(DFPlayer_BUSY) == HIGH);
       }
       break;
 
@@ -135,7 +147,7 @@ void loop_ide() {
   }
 }
 
-void unknown_error(uint8_t type, int value){
+void unknown_error(uint8_t type, int value) {
   switch (type) {
     case TimeOut:
       ansi_error_ln(F("Time Out!"));
