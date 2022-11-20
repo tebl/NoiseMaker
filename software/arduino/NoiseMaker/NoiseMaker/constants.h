@@ -30,6 +30,8 @@
 #define DFPlayer_RX 10
 #define DFPlayer_BUSY 12
 #define TEST_PIN A0
+#define VOL_UP_PIN A1
+#define VOL_DOWN_PIN A2
 #define MODE_PIN A5
 #define ARD_P2 2
 #define ARD_P3 3

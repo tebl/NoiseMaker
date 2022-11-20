@@ -45,8 +45,10 @@ void print_volume() {
   ansi_default();
 }
 
-void update_volume(uint8_t value) {
+void update_volume(int8_t value) {
   bool changed = false;
+  if (value > 31) value = 31;
+  if (value < 10) value = 10;
   if (setting_volume != value) {
     changed = true;
   }
@@ -56,21 +58,22 @@ void update_volume(uint8_t value) {
 
 }
 
-void volume_max() {
-  update_volume(31);
+void volume_up() {
+  update_volume(setting_volume + 4);
 }
 
-void volume_high() {
-  update_volume(20);
+void volume_down() {  
+  update_volume(setting_volume - 4);
 }
 
-void volume_medium() {
-  update_volume(15);
-}
-
-void volume_low() {
-  update_volume(10);
-}
+void volume_1() { update_volume(10); }
+void volume_2() { update_volume(15); }
+void volume_3() { update_volume(20); }
+void volume_4() { update_volume(22); }
+void volume_5() { update_volume(24); }
+void volume_6() { update_volume(26); }
+void volume_7() { update_volume(28); }
+void volume_8() { update_volume(31); }
 
 /* Called when a recognized command has been recognized, but before the
 * function is actually called.
@@ -125,10 +128,16 @@ void select_command_main(String command) {
   else if (handle_command(command, F("save"), do_save_settings));
   else if (handle_command(command, F("version"), print_version));
   else if (handle_command(command, F("volume"), print_volume));
-  else if (handle_command(command, F("volume max"), volume_max));
-  else if (handle_command(command, F("volume high"), volume_high));
-  else if (handle_command(command, F("volume medium"), volume_medium));
-  else if (handle_command(command, F("volume low"), volume_low));
+  else if (handle_command(command, F("volume 1"), volume_1));
+  else if (handle_command(command, F("volume 2"), volume_2));
+  else if (handle_command(command, F("volume 3"), volume_3));
+  else if (handle_command(command, F("volume 4"), volume_4));
+  else if (handle_command(command, F("volume 5"), volume_5));
+  else if (handle_command(command, F("volume 6"), volume_6));
+  else if (handle_command(command, F("volume 7"), volume_7));
+  else if (handle_command(command, F("volume 8"), volume_8));
+  else if (handle_command(command, F("volume up"), volume_up));
+  else if (handle_command(command, F("volume down"), volume_down));
   else {
     echo_unknown(command);
   }

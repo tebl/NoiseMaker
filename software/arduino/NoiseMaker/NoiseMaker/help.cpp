@@ -68,5 +68,5 @@ void print_help() {
   help_command(F("scratch"),            F("Clear settings in EEPROM (reset afterwards)"));
   help_command(F("version"),            F("Prints firmware version"));
   help_command(F("volume"),             F("Prints current volume"));
-  help_command(F("volume <setting>"),   F("Set volume (low, medium, high or max)"));
+  help_command(F("volume <setting>"),   F("Set volume (1-8)"));
 }

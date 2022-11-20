@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <ezButton.h>
 #include "constants.h"
 #include "settings.h"
 #include "SoftwareSerial.h"
@@ -16,8 +17,11 @@ uint8_t profile = DEFAULT_PROFILE;
 
 SoftwareSerial dfplayer_serial(DFPlayer_RX, DFPlayer_TX);
 DFRobotDFPlayerMini dfplayer;
+ezButton vol_up(VOL_UP_PIN);
+ezButton vol_down(VOL_DOWN_PIN);
 
 unsigned long last_activity = 0;
+uint8_t last_error;
 
 void play_ide_startup() {
   dfplayer.playFolder(OFFSET_IDE + profile, SOUND_IDE_STARTUP);
@@ -46,8 +50,10 @@ void setup_ide() {
 void setup() {
   dfplayer_serial.begin(BAUD_RATE_9600);
   process_serial_init();
-  pinMode(MODE_PIN, INPUT_PULLUP);
   pinMode(TEST_PIN, INPUT_PULLUP);
+  vol_up.setDebounceTime(50);
+  vol_down.setDebounceTime(50);
+  pinMode(MODE_PIN, INPUT_PULLUP);
   digitalWrite(LED_PIN, LOW);
   pinMode(LED_PIN, OUTPUT);
   pinMode(DFPlayer_BUSY, INPUT);
@@ -89,14 +95,15 @@ void loop_floppy() {
 bool replay = false;
 void loop_ide() {
   switch (state) {
-
     /* Waiting for startup sound to finish */
     case STATE_INIT:
       while (dfplayer.available()) {
-        if (dfplayer.readType() == DFPlayerPlayFinished) {
+        last_error = dfplayer.readType(); 
+        if (last_error == DFPlayerPlayFinished) {
+          delay(100);
           Serial.println(F("set idle"));
           state = STATE_IDE_IDLE;
-        } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+        } else unknown_error(last_error, dfplayer.read());
       }
       break;
 
@@ -117,11 +124,14 @@ void loop_ide() {
         Serial.println(F("set_paused"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
+        while (digitalRead(DFPlayer_BUSY) == LOW);
       } else {
         while (dfplayer.available()) {
-          if (dfplayer.readType() == DFPlayerPlayFinished) {
+          last_error = dfplayer.readType(); 
+          if (last_error == DFPlayerPlayFinished) {
+            delay(100);
             replay = true;
-          } else unknown_error(DFPlayerPlayFinished, dfplayer.read());
+          } else unknown_error(last_error, dfplayer.read());
         }
 
         if (replay) {
@@ -202,12 +212,26 @@ void unknown_error(uint8_t type, int value) {
   }
 }
 
-void loop() {
-  process_serial();
-  
+void process_switches() {
+  vol_up.loop();
+  vol_down.loop();
+
   if (digitalRead(TEST_PIN) == LOW) {
     last_activity = millis();
   }
+
+  if (vol_up.isPressed()) {
+    volume_up();
+  }
+
+  if (vol_down.isPressed()) {
+    volume_down();
+  }
+}
+
+void loop() {
+  process_serial();
+  process_switches();
   digitalWrite(LED_PIN, !digitalRead(DFPlayer_BUSY));
 
   if (mode == MODE_FLOPPY) loop_floppy();
