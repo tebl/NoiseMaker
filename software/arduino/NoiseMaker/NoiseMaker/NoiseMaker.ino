@@ -143,12 +143,26 @@ void loop_ide() {
       break;
 
     case STATE_IDE_PAUSED:
-      /* Check if we now see activity again */
-      if ((millis() - last_activity) < IDLE_THRESHOLD) {
-        Serial.println(F("resume"));
-        state = STATE_IDE_ACTIVE;
-        dfplayer.start();
-        while (digitalRead(DFPlayer_BUSY) == HIGH);
+      if (last_activity > 0) {
+        /* Check if we now see activity again */
+        if ((millis() - last_activity) < IDLE_THRESHOLD) {
+          Serial.println(F("resume"));
+          state = STATE_IDE_ACTIVE;
+          dfplayer.start();
+          while (digitalRead(DFPlayer_BUSY) == HIGH);
+        }
+
+        /* Check for shutdown. We can't actually know this due to only seeing
+         * HDD-busy instead of the registers, so we just play the sound make
+         * sure that we're ready to continue doing activity sounds right after
+         * (instead of doing another startup).
+         */
+        if ((millis() - last_activity) > SHUTDOWN_THRESHOLD) {
+          Serial.println(F("shutdown"));
+          play_ide_shutdown();
+          state = STATE_INIT;
+          while (digitalRead(DFPlayer_BUSY) == HIGH);
+        }
       }
       break;
 

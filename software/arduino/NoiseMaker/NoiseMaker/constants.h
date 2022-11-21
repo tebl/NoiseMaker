@@ -41,3 +41,4 @@
 #define APP_TITLE "NoiseMaker"
 #define APP_VERSION "0.1"
 const char STR_DONE[] PROGMEM  = "done!";
+const char STR_ERROR_ARGUMENT[] PROGMEM = "argument format";

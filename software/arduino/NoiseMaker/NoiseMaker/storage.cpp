@@ -44,7 +44,7 @@ void restore_settings() {
                     break;
 
                 case 2:
-                    profile = EEPROM.read(i);
+                    update_profile(EEPROM.read(i));
                     break;
                 
                 default:
@@ -65,7 +65,7 @@ void restore_settings() {
                     break;
 
                 case 2:
-                    profile = DEFAULT_PROFILE;
+                    update_profile(DEFAULT_PROFILE);
                     break;
                 
                 default:
