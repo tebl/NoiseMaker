@@ -9,6 +9,7 @@ extern bool ansi_enabled;
 extern uint8_t setting_volume;
 extern DFRobotDFPlayerMini dfplayer;
 extern uint8_t profile;
+extern uint8_t mode;
 
 /* Called when a recognized command has been recognized, but before the
 * function is actually called.
@@ -19,16 +20,14 @@ void echo_command(String command) {
   ansi_default();
 }
 
-void commands_init() {
-}
-
 void do_save_settings() {
   store_settings();
 }
 
 void do_scratch_settings() {
   clear_settings();
-  ansi_error_ln(F("Cleared settings - please RESET device!"));
+  ansi_notice_ln(F("Settings cleared!"));
+  ansi_error_ln(F("RESET device."));
 }
 
 void do_reload_settings() {
@@ -77,15 +76,6 @@ void volume_down() {
   store_settings();
 }
 
-void volume_1() { update_volume(10); }
-void volume_2() { update_volume(15); }
-void volume_3() { update_volume(20); }
-void volume_4() { update_volume(22); }
-void volume_5() { update_volume(24); }
-void volume_6() { update_volume(26); }
-void volume_7() { update_volume(28); }
-void volume_8() { update_volume(31); }
-
 bool parser_error(String command, String error) {
   ansi_error();
   Serial.print("? " + command);
@@ -119,7 +109,28 @@ bool handle_volume(String c) {
 void print_profile() {
   ansi_notice();
   Serial.print(F("Profile set to "));
-  Serial.println(profile);
+  Serial.print(profile);
+
+#if defined(__AVR_ATmega328P__)
+  Serial.print(' ');
+  Serial.print('(');
+
+  uint8_t dirnum = profile;
+  if (mode == MODE_IDE) dirnum += OFFSET_IDE;
+  else dirnum += OFFSET_FLOPPY;
+  switch (dirnum) {
+    case 1:   Serial.print(F("Floppy disk")); break;
+    case 10:  Serial.print(F("IBM Deskstar 22GXP 7200")); break;
+    case 11:  Serial.print(F("WD WD800BB 7200")); break;
+    case 12:  Serial.print(F("Seagate Medalist ST34321A 5400")); break;
+    case 13:  Serial.print(F("IBM UltraStar ES 5400")); break;
+    case 14:  Serial.print(F("Maxtor Atlas 10K SCSI")); break;
+    default:  Serial.print(F("Unknown profile")); break;
+  }
+  Serial.print(')');
+#endif
+
+  Serial.println();
   ansi_default();
 }
 
@@ -135,7 +146,7 @@ void update_profile(int8_t value) {
 bool handle_profile(String c) {
   if (c.length() != 9) return parser_error(c, (__FlashStringHelper*) STR_ERROR_ARGUMENT);
   uint8_t new_value = c[8] - '0';
-  if (new_value < 0 || new_value > 9) return parser_error(c, (__FlashStringHelper*) STR_ERROR_ARGUMENT);
+  if (new_value < 0 || new_value > 8) return parser_error(c, (__FlashStringHelper*) STR_ERROR_ARGUMENT);
   echo_command(c);
   update_profile(new_value);
   return true;
@@ -177,17 +188,22 @@ void select_command_main(String command) {
        if (handle_command(command, F("ansi"), ansi_status));
   else if (handle_command(command, F("ansi on"), ansi_on));
   else if (handle_command(command, F("ansi off"), ansi_off));
+#if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("ansi test"), ansi_test));
   else if (handle_command(command, F("clear"), do_clear));
+  else if (handle_command(command, F("dump"), dump_settings));
   else if (handle_command(command, F("help"), print_help));
+#endif
   else if (handle_command(command, F("profile"), print_profile));
   else if (command.startsWith(F("profile "))) handle_profile(command);
   else if (handle_command(command, F("reload"), do_reload_settings));
   else if (handle_command(command, F("scratch"), do_scratch_settings));
   else if (handle_command(command, F("save"), do_save_settings));
   else if (handle_command(command, F("version"), print_version));
+#if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("volume"), print_volume));
   else if (command.startsWith(F("volume "))) handle_volume(command);
+#endif
   else {
     echo_unknown(command);
   }

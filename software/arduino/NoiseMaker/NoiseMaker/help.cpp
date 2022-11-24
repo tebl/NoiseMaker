@@ -63,6 +63,9 @@ void print_help() {
   help_command(F("ansi off"),           F("Disable ANSI terminal code usage"));
   help_command(F("ansi test"),          F("Test ANSI terminal codes on terminal"));
   help_command(F("clear"),              F("Clear screen"));
+  help_command(F("dump"),               F("Show raw contents of EEPROM"));  
+  help_command(F("profile"),            F("Display audio profile"));
+  help_command(F("profile <number>"),   F("Set audio profile (0-8)"));
   help_command(F("reload"),             F("Reload settings from EEPROM"));  
   help_command(F("save"),               F("Save current settings to EEPROM"));
   help_command(F("scratch"),            F("Clear settings in EEPROM (reset afterwards)"));

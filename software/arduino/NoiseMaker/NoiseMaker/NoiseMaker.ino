@@ -14,6 +14,7 @@ uint8_t setting_volume = DEFAULT_VOLUME;
 uint8_t mode = MODE_FLOPPY;
 uint8_t state = STATE_INIT;
 uint8_t profile = DEFAULT_PROFILE;
+unsigned long threshold_shutdown = DEFAULT_SHUTDOWN;
 
 SoftwareSerial dfplayer_serial(DFPlayer_RX, DFPlayer_TX);
 DFRobotDFPlayerMini dfplayer;
@@ -110,7 +111,7 @@ void loop_ide() {
     /* Waiting for activity */
     case STATE_IDE_IDLE:
       while (digitalRead(DFPlayer_BUSY) == LOW);
-      if (last_activity > 0 && ((millis() - last_activity) < IDLE_THRESHOLD)) {
+      if (last_activity > 0 && ((millis() - last_activity) < ACTIVE_THRESHOLD)) {
         Serial.println(F("set_active"));
         state = STATE_IDE_ACTIVE;
         play_ide_active();
@@ -120,7 +121,7 @@ void loop_ide() {
     case STATE_IDE_ACTIVE:
       /* Check for activity timeout */
       replay = false;
-      if ((millis() - last_activity) > IDLE_THRESHOLD) {
+      if ((millis() - last_activity) > PAUSE_THRESHOLD) {
         Serial.println(F("set_paused"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
@@ -145,7 +146,7 @@ void loop_ide() {
     case STATE_IDE_PAUSED:
       if (last_activity > 0) {
         /* Check if we now see activity again */
-        if ((millis() - last_activity) < IDLE_THRESHOLD) {
+        if ((millis() - last_activity) < ACTIVE_THRESHOLD) {
           Serial.println(F("resume"));
           state = STATE_IDE_ACTIVE;
           dfplayer.start();
@@ -157,7 +158,7 @@ void loop_ide() {
          * sure that we're ready to continue doing activity sounds right after
          * (instead of doing another startup).
          */
-        if ((millis() - last_activity) > SHUTDOWN_THRESHOLD) {
+        if (threshold_shutdown > 0 && (millis() - last_activity) > threshold_shutdown) {
           Serial.println(F("shutdown"));
           play_ide_shutdown();
           state = STATE_INIT;

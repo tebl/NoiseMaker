@@ -12,6 +12,7 @@
 extern bool ansi_enabled;
 extern uint8_t setting_volume;
 extern uint8_t profile;
+extern unsigned long threshold_shutdown;
 
 int storage_checksum() {
     int x = 0;
@@ -25,6 +26,10 @@ int storage_checksum() {
     return x;
 }
 
+bool checksum_passes() {
+    return EEPROM.read(STORAGE_CHECKSUM) == storage_checksum();
+}
+
 void clear_settings() {
     int value = (EEPROM.read(STORAGE_CHECKSUM) + 1) % 256;
     EEPROM.update(STORAGE_CHECKSUM, value);
@@ -32,7 +37,7 @@ void clear_settings() {
 
 void restore_settings() {
     Serial.println(F("Restore settings ... "));
-    if (EEPROM.read(STORAGE_CHECKSUM) == storage_checksum()) {
+    if (checksum_passes()) {
         for (int i = 0; i < STORAGE_BYTES; i++) {
             switch (i) {
                 case 0:
@@ -47,6 +52,10 @@ void restore_settings() {
                     update_profile(EEPROM.read(i));
                     break;
                 
+                case 3:
+                    threshold_shutdown = EEPROM.read(i) * ONE_MINUTE;
+                    break;
+
                 default:
                     break;
             }
@@ -68,6 +77,10 @@ void restore_settings() {
                     update_profile(DEFAULT_PROFILE);
                     break;
                 
+                case 3:
+                    threshold_shutdown = DEFAULT_SHUTDOWN;
+                    break;
+
                 default:
                     break;
             }
@@ -91,6 +104,11 @@ void store_settings() {
             case 2:
                 EEPROM.update(i, profile);
                 break;
+
+            case 3:
+                if (threshold_shutdown == 0) EEPROM.update(i, 0);
+                else EEPROM.update(i, threshold_shutdown / ONE_MINUTE);
+                break;
             
             default:
                 EEPROM.update(i, 0);
@@ -99,4 +117,24 @@ void store_settings() {
     }
     EEPROM.update(STORAGE_CHECKSUM, storage_checksum());
     ansi_highlight_ln((__FlashStringHelper*) STR_DONE);
+}
+
+void dump_settings() {
+    Serial.print(F("Checksum... "));
+    if (checksum_passes()) {
+        ansi_highlight_ln(F("OK"));
+
+        for (int i = 0; i < STORAGE_BYTES; i++) {
+            if (i < 100) Serial.print(' ');
+            if (i < 10) Serial.print(' ');
+            Serial.print(i);
+            Serial.print(": ");
+
+            uint8_t value = EEPROM.read(i); 
+            if (value < 100) Serial.print(' ');
+            if (value < 10) Serial.print(' ');
+            Serial.println(value);
+        }
+    }
+    else ansi_error_ln(F("ERROR"));
 }
