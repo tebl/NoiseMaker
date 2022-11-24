@@ -50,8 +50,8 @@ void print_value(const __FlashStringHelper *string, unsigned long value) {
 
 void print_threshold() {
   print_value(F("ACTIVATING"), threshold_activating);
-  print_value(F("PAUSING"), threshold_pausing);
-  print_value(F("SHUTDOWN"), threshold_shutdown);
+  print_value(F("PAUSING   "), threshold_pausing);
+  print_value(F("SHUTDOWN  "), threshold_shutdown);
 }
 
 void print_version() {

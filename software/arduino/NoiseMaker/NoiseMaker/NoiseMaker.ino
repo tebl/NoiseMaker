@@ -21,8 +21,8 @@ unsigned long threshold_pausing = DEFAULT_PAUSE;
 
 SoftwareSerial dfplayer_serial(DFPlayer_RX, DFPlayer_TX);
 DFRobotDFPlayerMini dfplayer;
-ezButton vol_up(VOL_UP_PIN);
-ezButton vol_down(VOL_DOWN_PIN);
+ezButton vol_up(PIN_VOL_UP);
+ezButton vol_down(PIN_VOL_DOWN);
 
 unsigned long last_activity = 0;
 uint8_t last_error;
@@ -40,6 +40,7 @@ void play_ide_shutdown() {
 }
 
 void setup_floppy() {
+  pinMode(PIN_ARD_P2, INPUT);
 }
 
 void ide_interrupt() {
@@ -47,17 +48,19 @@ void ide_interrupt() {
 }
 
 void setup_ide() {
+  pinMode(PIN_ARD_P2, INPUT);
+
   play_ide_startup();
-  attachInterrupt(digitalPinToInterrupt(ARD_P2), ide_interrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIN_ARD_P2), ide_interrupt, FALLING);
 }
 
 void setup() {
   dfplayer_serial.begin(BAUD_RATE_9600);
   process_serial_init();
-  pinMode(TEST_PIN, INPUT_PULLUP);
+  pinMode(PIN_TEST, INPUT_PULLUP);
   vol_up.setDebounceTime(50);
   vol_down.setDebounceTime(50);
-  pinMode(MODE_PIN, INPUT_PULLUP);
+  pinMode(PIN_MODE_SEL, INPUT_PULLUP);
   digitalWrite(LED_PIN, LOW);
   pinMode(LED_PIN, OUTPUT);
   pinMode(DFPlayer_BUSY, INPUT);
@@ -78,7 +81,7 @@ void setup() {
   ansi_highlight_ln(F("done!"));
 
   Serial.print(F("Configured mode is... "));
-  if (digitalRead(MODE_PIN) == LOW) {
+  if (digitalRead(PIN_MODE_SEL) == LOW) {
     mode = MODE_FLOPPY;
     ansi_highlight_ln(F("floppy!"));
   } else {
@@ -234,7 +237,7 @@ void process_switches() {
   vol_up.loop();
   vol_down.loop();
 
-  if (digitalRead(TEST_PIN) == LOW) {
+  if (digitalRead(PIN_TEST) == LOW) {
     last_activity = millis();
   }
 

@@ -33,13 +33,14 @@
 #define DFPlayer_TX 11
 #define DFPlayer_RX 10
 #define DFPlayer_BUSY 12
-#define TEST_PIN A0
-#define VOL_UP_PIN A1
-#define VOL_DOWN_PIN A2
-#define MODE_PIN A5
-#define ARD_P2 2
-#define ARD_P3 3
-#define LED_PIN LED_BUILTIN
+#define PIN_TEST A0
+#define PIN_VOL_UP A1
+#define PIN_VOL_DOWN A2
+#define PIN_MODE_SEL A5
+#define PIN_ARD_P2 2
+#define PIN_ARD_P3 3
+
+#define PIN_LED LED_BUILTIN
 
 /* Strings for reuse */
 #define APP_TITLE "NoiseMaker"
