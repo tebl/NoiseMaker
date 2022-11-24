@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <ezButton.h>
+#include <SoftwareSerial.h>
+#include <DFRobotDFPlayerMini.h>
 #include "constants.h"
 #include "settings.h"
-#include "SoftwareSerial.h"
-#include "DFRobotDFPlayerMini.h"
+#include "debug.h"
 #include "serial_console.h"
 #include "commands.h"
 #include "ansi.h"
@@ -104,7 +105,7 @@ void loop_ide() {
         last_error = dfplayer.readType(); 
         if (last_error == DFPlayerPlayFinished) {
           delay(100);
-          Serial.println(F("set idle"));
+          DEBUG_PRINTLN(F("set idle"));
           state = STATE_IDE_IDLE;
         } else unknown_error(last_error, dfplayer.read());
       }
@@ -114,7 +115,7 @@ void loop_ide() {
     case STATE_IDE_IDLE:
       while (digitalRead(DFPlayer_BUSY) == LOW);
       if (last_activity > 0 && ((millis() - last_activity) < threshold_activating)) {
-        Serial.println(F("set_active"));
+        DEBUG_PRINTLN(F("activating"));
         state = STATE_IDE_ACTIVE;
         play_ide_active();
       }
@@ -124,7 +125,7 @@ void loop_ide() {
       /* Check for activity timeout */
       replay = false;
       if ((millis() - last_activity) > threshold_pausing) {
-        Serial.println(F("set_paused"));
+        DEBUG_PRINTLN(F("pausing"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
         while (digitalRead(DFPlayer_BUSY) == LOW);
@@ -138,7 +139,7 @@ void loop_ide() {
         }
 
         if (replay) {
-            Serial.println(F("replay"));
+            DEBUG_PRINTLN(F("replay"));
             play_ide_active();
             while (digitalRead(DFPlayer_BUSY) == HIGH);
         }
@@ -149,7 +150,7 @@ void loop_ide() {
       if (last_activity > 0) {
         /* Check if we now see activity again */
         if ((millis() - last_activity) < threshold_activating) {
-          Serial.println(F("resume"));
+          DEBUG_PRINTLN(F("resuming"));
           state = STATE_IDE_ACTIVE;
           dfplayer.start();
           while (digitalRead(DFPlayer_BUSY) == HIGH);
@@ -161,7 +162,7 @@ void loop_ide() {
          * (instead of doing another startup).
          */
         if (threshold_shutdown > 0 && (millis() - last_activity) > threshold_shutdown) {
-          Serial.println(F("shutdown"));
+          DEBUG_PRINTLN(F("shutdown"));
           play_ide_shutdown();
           state = STATE_INIT;
           while (digitalRead(DFPlayer_BUSY) == HIGH);

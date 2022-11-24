@@ -1,5 +1,7 @@
 #pragma once
 #include "constants.h"
+#define DEBUG
+
 #define DEFAULT_SHUTDOWN TEN_MINUTES
 #define DEFAULT_ACTIVE 100
 #define DEFAULT_PAUSE 250
