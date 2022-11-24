@@ -61,8 +61,8 @@ void setup() {
   vol_up.setDebounceTime(50);
   vol_down.setDebounceTime(50);
   pinMode(PIN_MODE_SEL, INPUT_PULLUP);
-  digitalWrite(LED_PIN, LOW);
-  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(PIN_LED, LOW);
+  pinMode(PIN_LED, OUTPUT);
   pinMode(DFPlayer_BUSY, INPUT);
 
   ansi_default();
@@ -253,7 +253,7 @@ void process_switches() {
 void loop() {
   process_serial();
   process_switches();
-  digitalWrite(LED_PIN, !digitalRead(DFPlayer_BUSY));
+  digitalWrite(PIN_LED, !digitalRead(DFPlayer_BUSY));
 
   if (mode == MODE_FLOPPY) loop_floppy();
   else loop_ide();
