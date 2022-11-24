@@ -5,11 +5,15 @@
 #include "help.h"
 #include "storage.h"
 
+extern uint8_t mode;
 extern bool ansi_enabled;
 extern uint8_t setting_volume;
-extern DFRobotDFPlayerMini dfplayer;
 extern uint8_t profile;
-extern uint8_t mode;
+extern unsigned long threshold_shutdown;
+extern unsigned long threshold_activating;
+extern unsigned long threshold_pausing;
+
+extern DFRobotDFPlayerMini dfplayer;
 
 /* Called when a recognized command has been recognized, but before the
 * function is actually called.
@@ -34,23 +38,39 @@ void do_reload_settings() {
   restore_settings();
 }
 
+void print_value(const __FlashStringHelper *string, unsigned long value) {
+  Serial.print(F("Value "));
+  Serial.print(string);
+  Serial.print(F(" = \""));
+  ansi_notice();
+  Serial.print(value);
+  ansi_default();
+  Serial.println(F("\""));
+}
+
+void print_threshold() {
+  print_value(F("ACTIVATING"), threshold_activating);
+  print_value(F("PAUSING"), threshold_pausing);
+  print_value(F("SHUTDOWN"), threshold_shutdown);
+}
+
 void print_version() {
   Serial.print(F(APP_TITLE));
   Serial.print(' ');
   Serial.println(F(APP_VERSION));
 }
 
-void print_welcome() {
-  ansi_clear();
-  ansi_highlight();
-  print_version();
-  ansi_default();
-}
-
 void print_volume() {
   ansi_notice();
   Serial.print(F("Volume set to "));
   Serial.println(setting_volume);
+  ansi_default();
+}
+
+void print_welcome() {
+  ansi_clear();
+  ansi_highlight();
+  print_version();
   ansi_default();
 }
 
@@ -199,6 +219,9 @@ void select_command_main(String command) {
   else if (handle_command(command, F("reload"), do_reload_settings));
   else if (handle_command(command, F("scratch"), do_scratch_settings));
   else if (handle_command(command, F("save"), do_save_settings));
+#if defined(__AVR_ATmega328P__)
+  else if (handle_command(command, F("threshold"), print_threshold));
+#endif
   else if (handle_command(command, F("version"), print_version));
 #if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("volume"), print_volume));

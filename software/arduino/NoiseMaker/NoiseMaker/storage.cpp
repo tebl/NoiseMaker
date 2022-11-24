@@ -13,6 +13,8 @@ extern bool ansi_enabled;
 extern uint8_t setting_volume;
 extern uint8_t profile;
 extern unsigned long threshold_shutdown;
+extern unsigned long threshold_activating;
+extern unsigned long threshold_pausing;
 
 int storage_checksum() {
     int x = 0;
@@ -56,6 +58,16 @@ void restore_settings() {
                     threshold_shutdown = EEPROM.read(i) * ONE_MINUTE;
                     break;
 
+                case 4:
+                    if (EEPROM.read(i) > 0) threshold_activating = EEPROM.read(i) * 10;
+                    else threshold_activating = DEFAULT_ACTIVE;
+                    break;
+
+                case 5:
+                    if (EEPROM.read(i) > 0) threshold_pausing = EEPROM.read(i) * 10;
+                    else threshold_pausing = DEFAULT_PAUSE;
+                    break;
+
                 default:
                     break;
             }
@@ -79,6 +91,14 @@ void restore_settings() {
                 
                 case 3:
                     threshold_shutdown = DEFAULT_SHUTDOWN;
+                    break;
+
+                case 4:
+                    threshold_activating = DEFAULT_ACTIVE;
+                    break;
+
+                case 5:
+                    threshold_pausing = DEFAULT_PAUSE;
                     break;
 
                 default:
@@ -109,7 +129,17 @@ void store_settings() {
                 if (threshold_shutdown == 0) EEPROM.update(i, 0);
                 else EEPROM.update(i, threshold_shutdown / ONE_MINUTE);
                 break;
-            
+
+            case 4:
+                if (threshold_activating == 0) EEPROM.update(i, DEFAULT_ACTIVE);
+                else EEPROM.update(i, threshold_activating / 10);
+                break;
+
+            case 5:
+                if (threshold_pausing == 0) EEPROM.update(i, DEFAULT_PAUSE);
+                else EEPROM.update(i, threshold_pausing / 10);
+                break;
+
             default:
                 EEPROM.update(i, 0);
                 break;

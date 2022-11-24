@@ -15,6 +15,8 @@ uint8_t mode = MODE_FLOPPY;
 uint8_t state = STATE_INIT;
 uint8_t profile = DEFAULT_PROFILE;
 unsigned long threshold_shutdown = DEFAULT_SHUTDOWN;
+unsigned long threshold_activating = DEFAULT_ACTIVE;
+unsigned long threshold_pausing = DEFAULT_PAUSE;
 
 SoftwareSerial dfplayer_serial(DFPlayer_RX, DFPlayer_TX);
 DFRobotDFPlayerMini dfplayer;
@@ -111,7 +113,7 @@ void loop_ide() {
     /* Waiting for activity */
     case STATE_IDE_IDLE:
       while (digitalRead(DFPlayer_BUSY) == LOW);
-      if (last_activity > 0 && ((millis() - last_activity) < ACTIVE_THRESHOLD)) {
+      if (last_activity > 0 && ((millis() - last_activity) < threshold_activating)) {
         Serial.println(F("set_active"));
         state = STATE_IDE_ACTIVE;
         play_ide_active();
@@ -121,7 +123,7 @@ void loop_ide() {
     case STATE_IDE_ACTIVE:
       /* Check for activity timeout */
       replay = false;
-      if ((millis() - last_activity) > PAUSE_THRESHOLD) {
+      if ((millis() - last_activity) > threshold_pausing) {
         Serial.println(F("set_paused"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
@@ -146,7 +148,7 @@ void loop_ide() {
     case STATE_IDE_PAUSED:
       if (last_activity > 0) {
         /* Check if we now see activity again */
-        if ((millis() - last_activity) < ACTIVE_THRESHOLD) {
+        if ((millis() - last_activity) < threshold_activating) {
           Serial.println(F("resume"));
           state = STATE_IDE_ACTIVE;
           dfplayer.start();
