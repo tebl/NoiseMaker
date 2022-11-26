@@ -55,6 +55,16 @@
 #define PIN_FLP_MOTOR_EN 6
 #define PIN_LED LED_BUILTIN
 
+/* Volume values */
+#define VOLUME_1 10
+#define VOLUME_2 15
+#define VOLUME_3 20
+#define VOLUME_4 22
+#define VOLUME_5 24
+#define VOLUME_6 26
+#define VOLUME_7 28
+#define VOLUME_8 31
+
 /* Strings for reuse */
 #define APP_TITLE "NoiseMaker"
 #define APP_VERSION "0.1"

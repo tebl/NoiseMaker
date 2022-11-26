@@ -26,6 +26,17 @@ void echo_command(String command) {
   ansi_default();
 }
 
+bool parser_error(String command, String error) {
+  ansi_error();
+  Serial.print("? " + command);
+  Serial.print(" (");
+  Serial.print(error);
+  Serial.println(")");
+  ansi_default();
+
+  return false;
+}
+
 void do_save_settings() {
   store_settings();
 }
@@ -67,17 +78,42 @@ void print_version() {
   Serial.println(F(APP_VERSION));
 }
 
-void print_volume() {
-  ansi_notice();
-  Serial.print(F("Volume set to "));
-  Serial.println(setting_volume);
-  ansi_default();
-}
-
 void print_welcome() {
   ansi_clear();
   ansi_highlight();
   print_version();
+  ansi_default();
+}
+
+int8_t volume_from_value(int8_t value) {
+  if (VOLUME_2 == value) return 2;
+  if (VOLUME_3 == value) return 3;
+  if (VOLUME_4 == value) return 4;
+  if (VOLUME_5 == value) return 5;
+  if (VOLUME_6 == value) return 6;
+  if (VOLUME_7 == value) return 7;
+  if (VOLUME_8 == value) return 8;
+  return 1;
+}
+
+int8_t volume_to_value(int8_t level) {
+  switch (level) {
+    case 2: return VOLUME_2;
+    case 3: return VOLUME_3;
+    case 4: return VOLUME_4;
+    case 5: return VOLUME_5;
+    case 6: return VOLUME_6;
+    case 7: return VOLUME_7;
+    case 8: return VOLUME_8;
+    default:
+      return VOLUME_1;
+  }
+}
+
+void print_volume() {
+  ansi_notice();
+  Serial.print(F("Volume set to "));
+  Serial.println(volume_from_value(setting_volume));
   ansi_default();
 }
 
@@ -94,24 +130,21 @@ void update_volume(int8_t value) {
 }
 
 void volume_up() {
-  update_volume(setting_volume + 4);
+  update_volume(
+    volume_to_value(
+      volume_from_value(setting_volume) + 1
+    )
+  );
   store_settings();
 }
 
 void volume_down() {  
-  update_volume(setting_volume - 4);
+  update_volume(
+    volume_to_value(
+      volume_from_value(setting_volume) - 1
+    )
+  );
   store_settings();
-}
-
-bool parser_error(String command, String error) {
-  ansi_error();
-  Serial.print("? " + command);
-  Serial.print(" (");
-  Serial.print(error);
-  Serial.println(")");
-  ansi_default();
-
-  return false;
 }
 
 bool handle_volume(String c) {
@@ -119,17 +152,7 @@ bool handle_volume(String c) {
   uint8_t new_value = c[7] - '0';
   if (new_value < 1 || new_value > 8) return parser_error(c, (__FlashStringHelper*) STR_ERROR_ARGUMENT);
   echo_command(c);
-  switch (new_value) {
-    case 2: update_volume(15); break; 
-    case 3: update_volume(20); break; 
-    case 4: update_volume(22); break; 
-    case 5: update_volume(24); break; 
-    case 6: update_volume(26); break; 
-    case 7: update_volume(28); break; 
-    case 8: update_volume(31); break;
-    default:
-      update_volume(10); break;
-  }
+  update_volume(volume_to_value(new_value));
   return true;
 }
 
@@ -219,8 +242,8 @@ void select_command_main(String command) {
   else if (handle_command(command, F("ansi test"), ansi_test));
   else if (handle_command(command, F("clear"), do_clear));
   else if (handle_command(command, F("help"), print_help));
-#endif
   else if (handle_command(command, F("dump"), dump_settings));
+#endif
   else if (handle_command(command, F("profile"), print_profile));
   else if (command.startsWith(F("profile "))) handle_profile(command);
   else if (handle_command(command, F("reload"), do_reload_settings));
@@ -230,10 +253,12 @@ void select_command_main(String command) {
   else if (handle_command(command, F("threshold"), print_threshold));
 // #endif
   else if (handle_command(command, F("version"), print_version));
-// #if defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("volume"), print_volume));
+  else if (handle_command(command, F("volume+"), volume_up));
+  else if (handle_command(command, F("volume-"), volume_down));
   else if (command.startsWith(F("volume "))) handle_volume(command);
-// #endif
+#endif
   else {
     echo_unknown(command);
   }
