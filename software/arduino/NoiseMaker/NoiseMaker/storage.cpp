@@ -12,9 +12,11 @@
 extern bool ansi_enabled;
 extern uint8_t setting_volume;
 extern uint8_t profile;
-extern unsigned long threshold_shutdown;
-extern unsigned long threshold_activating;
-extern unsigned long threshold_pausing;
+extern unsigned long threshold_ide_shutdown;
+extern unsigned long threshold_ide_activating;
+extern unsigned long threshold_ide_pausing;
+extern unsigned long threshold_flp_activating;
+extern unsigned long threshold_flp_deactivating;
 
 int storage_checksum() {
     int x = 0;
@@ -55,17 +57,27 @@ void restore_settings() {
                     break;
                 
                 case 3:
-                    threshold_shutdown = EEPROM.read(i) * ONE_MINUTE;
+                    threshold_ide_shutdown = EEPROM.read(i) * ONE_MINUTE;
                     break;
 
                 case 4:
-                    if (EEPROM.read(i) > 0) threshold_activating = EEPROM.read(i) * 10;
-                    else threshold_activating = DEFAULT_ACTIVE;
+                    if (EEPROM.read(i) > 0) threshold_ide_activating = EEPROM.read(i) * 10;
+                    else threshold_ide_activating = DEFAULT_IDE_ACTIVE;
                     break;
 
                 case 5:
-                    if (EEPROM.read(i) > 0) threshold_pausing = EEPROM.read(i) * 10;
-                    else threshold_pausing = DEFAULT_PAUSE;
+                    if (EEPROM.read(i) > 0) threshold_ide_pausing = EEPROM.read(i) * 10;
+                    else threshold_ide_pausing = DEFAULT_IDE_PAUSE;
+                    break;
+
+                case 6:
+                    if (EEPROM.read(i) > 0) threshold_flp_activating = EEPROM.read(i) * 10;
+                    else threshold_flp_activating = DEFAULT_FLP_ACTIVATING;
+                    break;
+
+                case 7:
+                    if (EEPROM.read(i) > 0) threshold_flp_deactivating = EEPROM.read(i) * 10;
+                    else threshold_flp_deactivating = DEFAULT_FLP_DEACTIVATING;
                     break;
 
                 default:
@@ -90,15 +102,23 @@ void restore_settings() {
                     break;
                 
                 case 3:
-                    threshold_shutdown = DEFAULT_SHUTDOWN;
+                    threshold_ide_shutdown = DEFAULT_IDE_SHUTDOWN;
                     break;
 
                 case 4:
-                    threshold_activating = DEFAULT_ACTIVE;
+                    threshold_ide_activating = DEFAULT_IDE_ACTIVE;
                     break;
 
                 case 5:
-                    threshold_pausing = DEFAULT_PAUSE;
+                    threshold_ide_pausing = DEFAULT_IDE_PAUSE;
+                    break;
+
+                case 6:
+                    threshold_flp_activating = DEFAULT_FLP_ACTIVATING;
+                    break;
+
+                case 7:
+                    threshold_flp_deactivating = DEFAULT_FLP_DEACTIVATING;
                     break;
 
                 default:
@@ -126,18 +146,28 @@ void store_settings() {
                 break;
 
             case 3:
-                if (threshold_shutdown == 0) EEPROM.update(i, 0);
-                else EEPROM.update(i, threshold_shutdown / ONE_MINUTE);
+                if (threshold_ide_shutdown == 0) EEPROM.update(i, 0);
+                else EEPROM.update(i, threshold_ide_shutdown / ONE_MINUTE);
                 break;
 
             case 4:
-                if (threshold_activating == 0) EEPROM.update(i, DEFAULT_ACTIVE);
-                else EEPROM.update(i, threshold_activating / 10);
+                if (threshold_ide_activating == 0) EEPROM.update(i, DEFAULT_IDE_ACTIVE / 10);
+                else EEPROM.update(i, threshold_ide_activating / 10);
                 break;
 
             case 5:
-                if (threshold_pausing == 0) EEPROM.update(i, DEFAULT_PAUSE);
-                else EEPROM.update(i, threshold_pausing / 10);
+                if (threshold_ide_pausing == 0) EEPROM.update(i, DEFAULT_IDE_PAUSE / 10);
+                else EEPROM.update(i, threshold_ide_pausing / 10);
+                break;
+
+            case 6:
+                if (threshold_flp_activating == 0) EEPROM.update(i, DEFAULT_FLP_ACTIVATING / 10);
+                else EEPROM.update(i, threshold_flp_activating / 10);
+                break;
+
+            case 7:
+                if (threshold_flp_deactivating == 0) EEPROM.update(i, DEFAULT_FLP_DEACTIVATING / 10);
+                else EEPROM.update(i, threshold_flp_deactivating / 10);
                 break;
 
             default:

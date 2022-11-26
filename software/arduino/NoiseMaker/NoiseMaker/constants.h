@@ -14,6 +14,10 @@
 #define MODE_FLOPPY 1
 
 #define STATE_INIT 0
+#define STATE_FLP_IDLE 1
+#define STATE_FLP_SPINNING 2
+#define STATE_FLP_ACTIVE 3
+
 #define STATE_IDE_IDLE 10
 #define STATE_IDE_ACTIVE 11
 #define STATE_IDE_PAUSED 12
@@ -21,6 +25,10 @@
 #define SOUND_IDE_STARTUP 1
 #define SOUND_IDE_ACTIVE 2
 #define SOUND_IDE_SHUTDOWN 3
+#define SOUND_FLP_STARTUP 1
+#define SOUND_FLP_SPIN 2
+#define SOUND_FLP_SNATCH 3
+#define SOUND_FLP_CLICK 4
 
 #define ONE_MINUTE 60000L
 #define TEN_MINUTES 600000L
@@ -40,6 +48,11 @@
 #define PIN_ARD_P2 2
 #define PIN_ARD_P3 3
 
+#define PIN_IDE_ACTIVE PIN_ARD_P2
+#define PIN_FLP_DRIVE_SEL PIN_ARD_P2
+#define PIN_FLP_STEP PIN_ARD_P3
+#define PIN_FLP_DISK_CHANGE 5
+#define PIN_FLP_MOTOR_EN 6
 #define PIN_LED LED_BUILTIN
 
 /* Strings for reuse */

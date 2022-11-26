@@ -9,9 +9,11 @@ extern uint8_t mode;
 extern bool ansi_enabled;
 extern uint8_t setting_volume;
 extern uint8_t profile;
-extern unsigned long threshold_shutdown;
-extern unsigned long threshold_activating;
-extern unsigned long threshold_pausing;
+extern unsigned long threshold_ide_shutdown;
+extern unsigned long threshold_ide_activating;
+extern unsigned long threshold_ide_pausing;
+extern unsigned long threshold_flp_activating;
+extern unsigned long threshold_flp_deactivating;
 
 extern DFRobotDFPlayerMini dfplayer;
 
@@ -39,7 +41,8 @@ void do_reload_settings() {
 }
 
 void print_value(const __FlashStringHelper *string, unsigned long value) {
-  Serial.print(F("Value "));
+  Serial.print(' ');
+  Serial.print(' ');
   Serial.print(string);
   Serial.print(F(" = \""));
   ansi_notice();
@@ -49,9 +52,13 @@ void print_value(const __FlashStringHelper *string, unsigned long value) {
 }
 
 void print_threshold() {
-  print_value(F("ACTIVATING"), threshold_activating);
-  print_value(F("PAUSING   "), threshold_pausing);
-  print_value(F("SHUTDOWN  "), threshold_shutdown);
+  Serial.println(F("IDE:"));
+  print_value(F("activating  "), threshold_ide_activating);
+  print_value(F("pausing     "), threshold_ide_pausing);
+  print_value(F("shutdown    "), threshold_ide_shutdown);
+  Serial.println(F("Floppy:"));
+  print_value(F("activating  "), threshold_flp_activating);
+  print_value(F("deactivating"), threshold_flp_deactivating);
 }
 
 void print_version() {
@@ -211,22 +218,22 @@ void select_command_main(String command) {
 #if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("ansi test"), ansi_test));
   else if (handle_command(command, F("clear"), do_clear));
-  else if (handle_command(command, F("dump"), dump_settings));
   else if (handle_command(command, F("help"), print_help));
 #endif
+  else if (handle_command(command, F("dump"), dump_settings));
   else if (handle_command(command, F("profile"), print_profile));
   else if (command.startsWith(F("profile "))) handle_profile(command);
   else if (handle_command(command, F("reload"), do_reload_settings));
   else if (handle_command(command, F("scratch"), do_scratch_settings));
   else if (handle_command(command, F("save"), do_save_settings));
-#if defined(__AVR_ATmega328P__)
+// #if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("threshold"), print_threshold));
-#endif
+// #endif
   else if (handle_command(command, F("version"), print_version));
-#if defined(__AVR_ATmega328P__)
+// #if defined(__AVR_ATmega328P__)
   else if (handle_command(command, F("volume"), print_volume));
   else if (command.startsWith(F("volume "))) handle_volume(command);
-#endif
+// #endif
   else {
     echo_unknown(command);
   }

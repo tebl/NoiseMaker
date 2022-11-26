@@ -15,17 +15,54 @@ uint8_t setting_volume = DEFAULT_VOLUME;
 uint8_t mode = MODE_FLOPPY;
 uint8_t state = STATE_INIT;
 uint8_t profile = DEFAULT_PROFILE;
-unsigned long threshold_shutdown = DEFAULT_SHUTDOWN;
-unsigned long threshold_activating = DEFAULT_ACTIVE;
-unsigned long threshold_pausing = DEFAULT_PAUSE;
+unsigned long threshold_ide_shutdown = DEFAULT_IDE_SHUTDOWN;
+unsigned long threshold_ide_activating = DEFAULT_IDE_ACTIVE;
+unsigned long threshold_ide_pausing = DEFAULT_IDE_PAUSE;
+unsigned long threshold_flp_activating = DEFAULT_FLP_ACTIVATING;
+unsigned long threshold_flp_deactivating = DEFAULT_FLP_DEACTIVATING;
 
 SoftwareSerial dfplayer_serial(DFPlayer_RX, DFPlayer_TX);
 DFRobotDFPlayerMini dfplayer;
 ezButton vol_up(PIN_VOL_UP);
 ezButton vol_down(PIN_VOL_DOWN);
 
-unsigned long last_activity = 0;
+volatile unsigned long last_activity = 0;
+bool last_motor_on = false;
 uint8_t last_error;
+bool replay = false;
+
+void play_flp_startup() {
+  dfplayer.playFolder(OFFSET_FLOPPY + profile, SOUND_FLP_STARTUP);
+}
+
+void play_flp_spin() {
+  dfplayer.playFolder(OFFSET_FLOPPY + profile, SOUND_FLP_SPIN);
+}
+
+void play_flp_snatch() {
+  dfplayer.playFolder(OFFSET_FLOPPY + profile, SOUND_FLP_SNATCH);
+}
+
+void play_flp_click() {
+  dfplayer.advertise(OFFSET_FLOPPY + profile);
+}
+
+void flp_interrupt_step() {
+  if (digitalRead(PIN_FLP_DRIVE_SEL) == LOW) {
+    last_activity = millis();
+  }
+}
+
+void setup_floppy() {
+  // TODO: need to disable pullups
+  pinMode(PIN_FLP_DRIVE_SEL, INPUT_PULLUP);
+  pinMode(PIN_FLP_STEP, INPUT_PULLUP);
+  pinMode(PIN_FLP_DISK_CHANGE, INPUT_PULLUP);
+  pinMode(PIN_FLP_MOTOR_EN, INPUT_PULLUP);
+
+  play_flp_startup();
+  attachInterrupt(digitalPinToInterrupt(PIN_FLP_STEP), flp_interrupt_step, FALLING);
+}
 
 void play_ide_startup() {
   dfplayer.playFolder(OFFSET_IDE + profile, SOUND_IDE_STARTUP);
@@ -39,19 +76,98 @@ void play_ide_shutdown() {
   dfplayer.playFolder(OFFSET_IDE + profile, SOUND_IDE_SHUTDOWN);
 }
 
-void setup_floppy() {
-  pinMode(PIN_ARD_P2, INPUT);
-}
-
 void ide_interrupt() {
   last_activity = millis();
 }
 
 void setup_ide() {
-  pinMode(PIN_ARD_P2, INPUT);
+  pinMode(PIN_IDE_ACTIVE, INPUT);
 
   play_ide_startup();
-  attachInterrupt(digitalPinToInterrupt(PIN_ARD_P2), ide_interrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(PIN_IDE_ACTIVE), ide_interrupt, FALLING);
+}
+
+void loop_floppy() {
+  switch (state) {
+    /* Waiting for startup sound to finish */
+    case STATE_INIT:
+      while (dfplayer.available()) {
+        last_error = dfplayer.readType(); 
+        if (last_error == DFPlayerPlayFinished) {
+          delay(100);
+          DEBUG_PRINTLN(F("set idle"));
+          state = STATE_FLP_IDLE;
+        } else unknown_error(last_error, dfplayer.read());
+      }
+      break;
+
+    /* Waiting for activity */
+    case STATE_FLP_IDLE:
+      while (digitalRead(DFPlayer_BUSY) == LOW) DEBUG_SPINLOCK('-');
+      if (digitalRead(PIN_FLP_MOTOR_EN) == LOW) {
+        DEBUG_PRINTLN(F("motor on"));
+        state = STATE_FLP_SPINNING;
+        play_flp_spin();
+      }
+      break;
+    
+    /* Motor is spinning, wait for steps */
+    case STATE_FLP_SPINNING:
+      replay = false;
+      if (digitalRead(PIN_FLP_MOTOR_EN) == HIGH) {
+        DEBUG_PRINTLN(F("motor off"));
+        state = STATE_FLP_IDLE;
+        dfplayer.stop();
+        while (digitalRead(DFPlayer_BUSY) == LOW) DEBUG_SPINLOCK('.');
+      } else {
+        while (dfplayer.available()) {
+          last_error = dfplayer.readType(); 
+          if (last_error == DFPlayerPlayFinished) {
+            replay = true;
+          } else unknown_error(last_error, dfplayer.read());
+        }
+
+        if (replay) {
+            DEBUG_PRINTLN(F("replay spin"));
+            play_flp_spin();
+            delay(100);
+            while (digitalRead(DFPlayer_BUSY) == HIGH) DEBUG_SPINLOCK('*');;
+        } else {
+          if (last_activity > 0 && ((millis() - last_activity) < threshold_flp_activating)) {
+            DEBUG_PRINTLN(F("activating"));
+            state = STATE_FLP_ACTIVE;
+            play_flp_click();
+            while (digitalRead(DFPlayer_BUSY) == HIGH) DEBUG_SPINLOCK('+');;
+          }
+        }
+      }
+      break;
+    
+    /* Motor is on, steps recently been taken */
+    case STATE_FLP_ACTIVE:
+      replay = false;
+      if ((millis() - last_activity) > threshold_flp_deactivating) {
+        DEBUG_PRINTLN(F("deactivating"));
+        state = STATE_FLP_SPINNING;
+        dfplayer.stopAdvertise();
+        delay(200);
+      } else {
+        while (dfplayer.available()) {
+          last_error = dfplayer.readType(); 
+          if (last_error == DFPlayerPlayFinished) {
+            replay = true;
+          } else unknown_error(last_error, dfplayer.read());
+        }
+
+        if (replay) {
+            DEBUG_PRINTLN(F("replay click"));
+            play_flp_click();
+            delay(200);
+            while (digitalRead(DFPlayer_BUSY) == HIGH) DEBUG_SPINLOCK('/');;
+        }
+      }
+      break;
+  }
 }
 
 void setup() {
@@ -95,11 +211,6 @@ void setup() {
   else setup_ide();
 }
 
-void loop_floppy() {
-
-}
-
-bool replay = false;
 void loop_ide() {
   switch (state) {
     /* Waiting for startup sound to finish */
@@ -117,7 +228,7 @@ void loop_ide() {
     /* Waiting for activity */
     case STATE_IDE_IDLE:
       while (digitalRead(DFPlayer_BUSY) == LOW);
-      if (last_activity > 0 && ((millis() - last_activity) < threshold_activating)) {
+      if (last_activity > 0 && ((millis() - last_activity) < threshold_ide_activating)) {
         DEBUG_PRINTLN(F("activating"));
         state = STATE_IDE_ACTIVE;
         play_ide_active();
@@ -127,7 +238,7 @@ void loop_ide() {
     case STATE_IDE_ACTIVE:
       /* Check for activity timeout */
       replay = false;
-      if ((millis() - last_activity) > threshold_pausing) {
+      if ((millis() - last_activity) > threshold_ide_pausing) {
         DEBUG_PRINTLN(F("pausing"));
         state = STATE_IDE_PAUSED;
         dfplayer.pause();
@@ -152,7 +263,7 @@ void loop_ide() {
     case STATE_IDE_PAUSED:
       if (last_activity > 0) {
         /* Check if we now see activity again */
-        if ((millis() - last_activity) < threshold_activating) {
+        if ((millis() - last_activity) < threshold_ide_activating) {
           DEBUG_PRINTLN(F("resuming"));
           state = STATE_IDE_ACTIVE;
           dfplayer.start();
@@ -164,7 +275,7 @@ void loop_ide() {
          * sure that we're ready to continue doing activity sounds right after
          * (instead of doing another startup).
          */
-        if (threshold_shutdown > 0 && (millis() - last_activity) > threshold_shutdown) {
+        if (threshold_ide_shutdown > 0 && (millis() - last_activity) > threshold_ide_shutdown) {
           DEBUG_PRINTLN(F("shutdown"));
           play_ide_shutdown();
           state = STATE_INIT;
