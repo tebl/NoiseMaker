@@ -70,3 +70,4 @@
 #define APP_VERSION "0.1"
 const char STR_DONE[] PROGMEM  = "done!";
 const char STR_ERROR_ARGUMENT[] PROGMEM = "argument format";
+const char STR_ERROR_DFPLAYER[] PROGMEM = "DFPlayer ERROR ";

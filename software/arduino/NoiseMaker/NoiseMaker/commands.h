@@ -1,7 +1,4 @@
 #include <Arduino.h>
-
-void commands_init();
-
 void print_help();
 void print_version();
 void print_welcome();

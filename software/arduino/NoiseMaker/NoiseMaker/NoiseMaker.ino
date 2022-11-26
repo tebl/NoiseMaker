@@ -54,11 +54,14 @@ void flp_interrupt_step() {
 }
 
 void setup_floppy() {
-  // TODO: need to disable pullups
-  pinMode(PIN_FLP_DRIVE_SEL, INPUT_PULLUP);
-  pinMode(PIN_FLP_STEP, INPUT_PULLUP);
-  pinMode(PIN_FLP_DISK_CHANGE, INPUT_PULLUP);
-  pinMode(PIN_FLP_MOTOR_EN, INPUT_PULLUP);
+  uint8_t mode = INPUT;
+  #ifdef DEBUG_OFFLINE
+    mode = INPUT_PULLUP;
+  #endif
+  pinMode(PIN_FLP_DRIVE_SEL, mode);
+  pinMode(PIN_FLP_STEP, mode);
+  pinMode(PIN_FLP_DISK_CHANGE, mode);
+  pinMode(PIN_FLP_MOTOR_EN, mode);
 
   play_flp_startup();
   attachInterrupt(digitalPinToInterrupt(PIN_FLP_STEP), flp_interrupt_step, FALLING);
@@ -81,7 +84,11 @@ void ide_interrupt() {
 }
 
 void setup_ide() {
-  pinMode(PIN_IDE_ACTIVE, INPUT);
+  uint8_t mode = INPUT;
+  #ifdef DEBUG_OFFLINE
+    mode = INPUT_PULLUP;
+  #endif
+  pinMode(PIN_IDE_ACTIVE, mode);
 
   play_ide_startup();
   attachInterrupt(digitalPinToInterrupt(PIN_IDE_ACTIVE), ide_interrupt, FALLING);
@@ -290,6 +297,7 @@ void loop_ide() {
 }
 
 void unknown_error(uint8_t type, int value) {
+  #if defined(__AVR_ATmega328P__)
   switch (type) {
     case TimeOut:
       ansi_error_ln(F("Time Out!"));
@@ -342,6 +350,35 @@ void unknown_error(uint8_t type, int value) {
     default:
       break;
   }
+  #else
+  switch (type) {
+    case TimeOut:
+    case WrongStack:
+    case DFPlayerCardRemoved:
+    case DFPlayerError:
+      ansi_error();
+      Serial.print(STR_ERROR_DFPLAYER);
+      if (type == DFPlayerError) {
+        Serial.print(type);
+        Serial.print(' ');
+        Serial.print(value);
+      } else Serial.println(type);
+      ansi_default();
+      break;
+
+    case DFPlayerPlayFinished:
+    case DFPlayerCardOnline:
+    case DFPlayerCardInserted:
+      ansi_notice();
+      Serial.print(STR_ERROR_DFPLAYER);
+      Serial.println(type);
+      ansi_default();
+      break;
+
+    default:
+      break;
+  }
+  #endif
 }
 
 void process_switches() {

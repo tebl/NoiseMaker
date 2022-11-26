@@ -36,8 +36,8 @@ void help_command(const __FlashStringHelper *command = nullptr,
     Serial.print(' ');
     ansi_colour(parameter, COLOUR_WHITE);
   }
-  for (int i = size; i < 20; i++) Serial.print(' ');
-  position = 20;
+  for (int i = size; i < 22; i++) Serial.print(' ');
+  position = 22;
 
   if (description != nullptr) {
     ansi_colour(description, COLOUR_WHITE);
@@ -59,18 +59,25 @@ void help_command(const __FlashStringHelper *command = nullptr,
 */
 void print_help() {
   ansi_colour_ln(F("Commands supported:"), COLOUR_MAGENTA);
-  help_command(F("ansi on"),            F("Enable ANSI terminal code usage"));
-  help_command(F("ansi off"),           F("Disable ANSI terminal code usage"));
-  help_command(F("ansi test"),          F("Test ANSI terminal codes on terminal"));
-  help_command(F("clear"),              F("Clear screen"));
-  help_command(F("dump"),               F("Show raw contents of EEPROM"));  
-  help_command(F("profile"),            F("Display audio profile"));
-  help_command(F("profile <number>"),   F("Set audio profile (0-8)"));
-  help_command(F("reload"),             F("Reload settings from EEPROM"));  
-  help_command(F("save"),               F("Save current settings to EEPROM"));
-  help_command(F("scratch"),            F("Clear settings in EEPROM (reset afterwards)"));
-  help_command(F("threshold"),          F("Show threshold values"));
-  help_command(F("version"),            F("Prints firmware version"));
-  help_command(F("volume"),             F("Prints current volume"));
-  help_command(F("volume <setting>"),   F("Set volume (1-8)"));
+  help_command(F("ansi on"),              F("Enable ANSI terminal code usage"));
+  help_command(F("ansi off"),             F("Disable ANSI terminal code usage"));
+  help_command(F("ansi test"),            F("Test ANSI terminal codes on terminal"));
+  help_command(F("clear"),                F("Clear screen"));
+  help_command(F("dump"),                 F("Show raw contents of EEPROM"));  
+  help_command(F("profile"),              F("Display audio profile"));
+  help_command(F("profile <number>"),     F("Set audio profile (0-8)"));
+  help_command(F("reload"),               F("Reload settings from EEPROM"));  
+  help_command(F("save"),                 F("Save current settings to EEPROM"));
+  help_command(F("scratch"),              F("Clear settings in EEPROM (reset afterwards)"));
+  help_command(F("threshold"),            F("Show threshold values"));
+  help_command(F("ide-activating <XX>"),  F("Set IDE activation threshold (10ms increments in HEX)"));
+  help_command(F("ide-pausing <XX>"),     F("Set IDE pause threshold (10ms increments in HEX)"));
+  help_command(F("ide-shutdown <XX>"),    F("Set IDE shutdown timer (Number of minutes in HEX)"));
+  help_command(F("flp-activating <XX>"),  F("Set IDE activation threshold (10ms increments in HEX)"));
+  help_command(F("flp-deactivating <XX>"),F("Set IDE deactivation threshold (10ms increments in HEX)"));
+  help_command(F("version"),              F("Prints firmware version"));
+  help_command(F("volume"),               F("Prints current volume"));
+  help_command(F("volume <setting>"),     F("Set volume level (1-8)"));
+  help_command(F("volume+"),              F("Increase volume"));
+  help_command(F("volume-"),              F("Decrease volume"));
 }
