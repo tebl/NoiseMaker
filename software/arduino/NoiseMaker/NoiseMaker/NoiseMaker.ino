@@ -357,7 +357,7 @@ void unknown_error(uint8_t type, int value) {
     case DFPlayerCardRemoved:
     case DFPlayerError:
       ansi_error();
-      Serial.print(STR_ERROR_DFPLAYER);
+      Serial.print((__FlashStringHelper*) STR_ERROR_DFPLAYER);
       if (type == DFPlayerError) {
         Serial.print(type);
         Serial.print(' ');
@@ -370,7 +370,7 @@ void unknown_error(uint8_t type, int value) {
     case DFPlayerCardOnline:
     case DFPlayerCardInserted:
       ansi_notice();
-      Serial.print(STR_ERROR_DFPLAYER);
+      Serial.print((__FlashStringHelper*) STR_ERROR_DFPLAYER);
       Serial.println(type);
       ansi_default();
       break;
