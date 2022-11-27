@@ -48,9 +48,9 @@ void play_flp_click() {
 }
 
 void flp_interrupt_step() {
-  if (digitalRead(PIN_FLP_DRIVE_SEL) == LOW) {
+  // if (digitalRead(PIN_FLP_DRIVE_SEL) == LOW) {
     last_activity = millis();
-  }
+  // }
 }
 
 void setup_floppy() {
