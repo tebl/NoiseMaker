@@ -793,7 +793,7 @@ U 1 1 6372F928
 P 1950 6650
 F 0 "JP2" H 2050 6400 50  0000 L CNN
 F 1 "DRV_SEL2" H 2050 6475 50  0000 L CNN
-F 2 "solder_bridge:select2" H 1950 6650 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1950 6650 50  0001 C CNN
 F 3 "~" H 1950 6650 50  0001 C CNN
 	1    1950 6650
 	-1   0    0    1   
@@ -1115,6 +1115,9 @@ Wire Wire Line
 	6075 3325 6350 3325
 Wire Wire Line
 	6825 3125 6900 3125
+Connection ~ 6900 3125
+Wire Wire Line
+	6900 3125 6900 3400
 Wire Bus Line
 	1100 2075 1100 7125
 Wire Bus Line
@@ -1125,7 +1128,4 @@ Wire Bus Line
 	2650 2075 2650 4225
 Wire Bus Line
 	1400 2075 1400 4225
-Connection ~ 6900 3125
-Wire Wire Line
-	6900 3125 6900 3400
 $EndSCHEMATC
