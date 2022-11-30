@@ -1,8 +1,6 @@
 # NoiseMaker Standard
 The *NoiseMaker Standard*-version is really the first version I created for making noise when used with either 34-pin floppy drive replacements such as the Gotek - OR - the 40-pin IDE-replacements such as CF2IDE, SD2IDE etc. This document goes into building up a PCB for one of these, but not both at a time. For a more graceful introduction to what the *NoiseMaker* is meant to do, check out the main [documentation](https://github.com/tebl/NoiseMaker) before continuing.
 
-
-
 - [1> Building the device](#1-building-the-device)
   - [1.1> Soldering it together](#11-soldering-it-together)
   - [1.2> IDE-version](#12-ide-version)
@@ -34,10 +32,24 @@ The construction of this unit should be fairly straight-forward, just take your 
 The supplied KiCad files should be sufficient as both a schematic and as a  starting point for ordering PCBs (basically you could just zip the contents of the export folder and upload that on a fabrication site), the schematic is also available in [PDF-format](https://github.com/tebl/NoiseMaker/tree/main/documentation/schematic) and this is what you'll need to print and work your way through this things don't work as expected after assembly.
 
 # 3> BOM
-Most parts should be easy to get a hold of from your favourite local electronic component shop, but given that I don't have access to such shops where I live so everything was based on whatever I could get cheapest from eBay/AliExpress (free shipping, but plan on waiting 3-4 weeks for delivery). Components in parenthesis can be considered optional for features beyond the more basic functionality, but where's the fun in that? You deserve the complete package.
+Most parts should be easy to get a hold of from your favourite local electronic component shop, but given that I don't have access to such shops where I live so everything was based on whatever I could get cheapest from eBay/AliExpress (free shipping, but plan on waiting 3-4 weeks for delivery). Components in parenthesis can be considered optional for features beyond the more basic functionality, but where's the fun in that? You probably want the complete package.
 
 | Reference             | Item                                                              | Count | Order  |
 | --------------------- | ----------------------------------------------------------------- | ----- | ------ |
 | NoiseMaker Standard   | Fabricate using Gerber files                                      |     1 | PCBWay
-| A1 | Arduino Nano (328, 168 with less features) | 1
-| A2 | MP3-TF-16P (also known as DFPlayer Mini) | 1
+| A1 *                  | Arduino Nano (328, 168 with less features)                        |     1 |
+| A2 *                  | MP3-TF-16P (also known as DFPlayer Mini)                          |     1 |
+| D1                    | 1N5819 (DO-41), 1N4001 if you don't have one available            |     1 |
+| J1 **                 | 2x20pin female header, 2x20pin male header or 2x17pin male header |     1 |
+| J2 **                 | 2x20pin male header or 2x17pin male header                        |     1 |
+| J3 ***                | JVC Mini 4P, right-angle flat power connector for floppy          |     1 |
+| J4                    | 4pin breakable right-angle header                                 |    (1)|
+| JP2                   | 3pin straight pin header                                          |     1 |
+|                       | Jumper cap                                                        |     1 |
+| LS1                   | Passive buzzer (7.62mm pin spacing)                               |    (1)|
+| R1                    | 1k Ohm resistor                                                   |     1 |
+| SW1-SW3               | 6x6mm momentary button                                            |    (3)|
+
+*) Both of the modules will be soldered to the PCB with some straight male headers in between, when assembling the first unit it is recommend that you assemble it with female pin headers on the board so that modules can be moved around until happy with the results.
+**) The type of header used here depends on what the board will be used as, 2x16pin are for floppy while 2x20pin are for IDE.
+***) When installed directly on top of a Compact Flash adapter you can opt to wire it directly to the adapter. If you can't find the connector, it might be easier to find a floppy power splitter cable, cut and solder on the wires from that.
