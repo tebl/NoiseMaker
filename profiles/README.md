@@ -16,6 +16,6 @@ While I hope to make my own recordings to match my own hardware, a few profiles 
 Modified versions of Amiga floppy drive sounds, the original audio files have been up for download as part of the [WinUAE](https://www.winuae.net/download/) installation.
 
 # Old HDDs
-User [Klerpp](https://freesound.org/people/Klerrp/) on freesound has created a pack of recordings of [old HDDs](https://freesound.org/people/Klerrp/packs/8850/?page=3#sound), this profile has been created with those recordings as a starting point. The files have been tweaked for length, volume and separated into separate files depending on what the HDD was doing at the time.
+User [Klerpp](https://freesound.org/people/Klerrp/) on freesound has created a pack of recordings of [old HDDs](https://freesound.org/people/Klerrp/packs/8850), this profile has been created with those recordings as a starting point. The files have been tweaked for length, volume and separated into separate files depending on what the HDD was doing at the time.
 
 The files have been release under a [CC0 1.0-license](https://creativecommons.org/publicdomain/zero/1.0/), requiring no specific licensing steps beyond specifying that they come with no warranty of any kind - neither from its original creator or the NoiseMaker project.
