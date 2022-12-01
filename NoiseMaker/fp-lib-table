@@ -7,5 +7,5 @@
   (lib (name noisemaker)(type KiCad)(uri $KIPRJMOD/../common/modules/noisemaker.pretty)(options "")(descr ""))
   (lib (name solder_bridge)(type KiCad)(uri $KIPRJMOD/../common/modules/solder_bridge.pretty)(options "")(descr ""))
   (lib (name switch_cutout)(type KiCad)(uri $KIPRJMOD/../common/modules/switch_cutout.pretty)(options "")(descr ""))
-  (lib (name Buzzer)(type KiCad)(uri $KIPRJMOD/../common/modules/Buzzer.pretty)(options "")(descr ""))
+  (lib (name small_buzzer)(type KiCad)(uri $KIPRJMOD/../common/modules/small_buzzer.pretty)(options "")(descr ""))
 )
