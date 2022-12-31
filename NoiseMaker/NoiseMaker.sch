@@ -94,11 +94,11 @@ F 3 "" H 9925 3425 50  0001 C CNN
 $EndComp
 NoConn ~ 5675 2125
 $Comp
-L Device:D_Small D1
+L Diode:1N5819 D1
 U 1 1 634D2772
 P 9025 4800
 F 0 "D1" H 9025 5007 50  0000 C CNN
-F 1 "1n4001" H 9025 4916 50  0000 C CNN
+F 1 "1N5819" H 9025 4916 50  0000 C CNN
 F 2 "Diode_THT:D_DO-41_SOD81_P12.70mm_Horizontal" V 9025 4800 50  0001 C CNN
 F 3 "~" V 9025 4800 50  0001 C CNN
 	1    9025 4800
@@ -128,8 +128,6 @@ F 3 "" H 9250 5175 50  0001 C CNN
 $EndComp
 NoConn ~ 5475 2125
 NoConn ~ 9850 3100
-Wire Wire Line
-	8925 4800 8775 4800
 Wire Wire Line
 	8775 4800 8775 4725
 $Comp
@@ -826,7 +824,7 @@ U 1 1 63797BFE
 P 1950 6100
 F 0 "JP1" H 2050 5850 50  0000 L CNN
 F 1 "DRV_SEL1" H 2050 5925 50  0000 L CNN
-F 2 "solder_bridge:select2" H 1950 6100 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 1950 6100 50  0001 C CNN
 F 3 "~" H 1950 6100 50  0001 C CNN
 	1    1950 6100
 	-1   0    0    1   
@@ -1064,8 +1062,6 @@ Wire Wire Line
 	9250 5000 9250 5175
 Connection ~ 9250 5000
 NoConn ~ 9350 5100
-Wire Wire Line
-	9125 4800 9350 4800
 $Comp
 L Switch:SW_Push SW2
 U 1 1 637DB949
@@ -1118,6 +1114,10 @@ Wire Wire Line
 Connection ~ 6900 3125
 Wire Wire Line
 	6900 3125 6900 3400
+Wire Wire Line
+	8775 4800 8875 4800
+Wire Wire Line
+	9175 4800 9350 4800
 Wire Bus Line
 	1100 2075 1100 7125
 Wire Bus Line
