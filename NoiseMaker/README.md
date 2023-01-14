@@ -44,7 +44,7 @@ Most parts should be easy to get a hold of from your favourite local electronic 
 
 | Reference             | Item                                                              | Count | Order  |
 | --------------------- | ----------------------------------------------------------------- | ----- | ------ |
-| NoiseMaker Standard   | Fabricate using Gerber files                                      |     1 | PCBWay
+| NoiseMaker Standard   | Fabricate using Gerber files                                      |     1 | [PCBWay](https://www.pcbway.com/project/shareproject/NoiseMaker_IDE_Floppy_8a4ab037.html)
 | A1 *                  | Arduino Nano (328, 168 with less features)                        |     1 |
 | A2 *                  | MP3-TF-16P (also known as DFPlayer Mini)                          |     1 |
 | D1                    | 1N5819 (DO-41), 1N4001 if you don't have one available            |     1 |
